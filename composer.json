@@ -2,7 +2,6 @@
     "name": "wxkingstar/garfield",
     "description": "Garfield agent.",
     "keywords": ["Garfield"],
-    "version": "1.0.0",
     "license": "proprietary",
     "authors": [
         {
@@ -18,7 +17,7 @@
     ],
     "type": "Library",
     "require": {
-		"php": ">=5.4 || ^7.0"
+		"php": "^5.4 || ^7.0"
     },
 	"require-dev": {
 		"phpunit/phpunit": "5.2.*"
