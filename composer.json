@@ -1,5 +1,5 @@
 {
-    "name": "garfield/agent",
+    "name": "wxkingstar/garfield",
     "description": "Garfield agent.",
     "keywords": ["garfield"],
     "license": "proprietary",
@@ -18,7 +18,7 @@
     },
 	"autoload": {
         "psr-4": {
-            "Garfield\\Agent\\": "src/"
+            "wxkingstar\\garfeild\\": "src/"
         }
     }
 }

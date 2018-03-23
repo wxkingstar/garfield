@@ -1,6 +1,6 @@
 <?php
 
-namespace Garfield\Agent;
+namespace wxkingstar\garfield;
 
 class GarfieldProbe
 {
