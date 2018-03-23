@@ -9,7 +9,7 @@
             "email": "wangxin@inagora.cn"
         }
     ],
-    "type": "library",
+    "type": "Library",
     "require": {
 		"php": ">=5.4"
     },
