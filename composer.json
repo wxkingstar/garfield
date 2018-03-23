@@ -2,6 +2,7 @@
     "name": "wxkingstar/garfield",
     "description": "Garfield agent.",
     "keywords": ["Garfield"],
+    "version": "1.0.0",
     "license": "proprietary",
     "authors": [
         {
