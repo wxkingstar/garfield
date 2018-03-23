@@ -257,33 +257,6 @@ class BaseModelDebug
     }
 
 
-    public static function qShutDown()
-    {
-        // all_info的debug信息
-        if (defined("QDEBUG") && QDEBUG == true) {
-            $error = error_get_last();
-            self::formatErrorInfo($error['type'], $error['message'], $error['file'], $error['line']);
-
-            $statInfo = BaseModelDebug::getStatInfo();
-            GarfieldProbe::table(
-                array(
-                    array('资源', '次数', '消耗时间(ms)'),
-                    array('sql', $statInfo['db']['count'] . ' 次', $statInfo['db']['time'] . ' ms'),
-                    array('request', $statInfo['request']['count'] . ' 次', $statInfo['request']['time'] . ' ms'),
-                    array('api', $statInfo['api']['count'] . ' 次', $statInfo['api']['time'] . ' ms'),
-                    array('mc', $statInfo['mc']['count'] . ' 次', '不统计'),
-                    //array('redis',      $statInfo['redis']['count'].' 次',      $statInfo['redis']['time'] . ' ms'  ),
-                    array('总运行时间', '', sprintf("%0.3f", (microtime(true) - QDEBUG_STARG_TIME)) . "s")
-                ),
-                'all_info'
-            );
-
-            BaseModelDebug::sendOnlineDebug(BaseModelDebug::$error);
-        }
-
-        return true;
-    }
-
     /**
      * 调试输出错误信息
      * @param $errno
@@ -345,3 +318,29 @@ class BaseModelDebug
 
 }
 
+function qShutDown()
+{
+    // all_info的debug信息
+    if (defined("QDEBUG") && QDEBUG == true) {
+        $error = error_get_last();
+        BaseModelDebug::formatErrorInfo($error['type'], $error['message'], $error['file'], $error['line']);
+
+        $statInfo = BaseModelDebug::getStatInfo();
+        GarfieldProbe::table(
+            array(
+                array('资源', '次数', '消耗时间(ms)'),
+                array('sql', $statInfo['db']['count'] . ' 次', $statInfo['db']['time'] . ' ms'),
+                array('request', $statInfo['request']['count'] . ' 次', $statInfo['request']['time'] . ' ms'),
+                array('api', $statInfo['api']['count'] . ' 次', $statInfo['api']['time'] . ' ms'),
+                array('mc', $statInfo['mc']['count'] . ' 次', '不统计'),
+                //array('redis',      $statInfo['redis']['count'].' 次',      $statInfo['redis']['time'] . ' ms'  ),
+                array('总运行时间', '', sprintf("%0.3f", (microtime(true) - QDEBUG_STARG_TIME)) . "s")
+            ),
+            'all_info'
+        );
+
+        BaseModelDebug::sendOnlineDebug(BaseModelDebug::$error);
+    }
+
+    return true;
+}
