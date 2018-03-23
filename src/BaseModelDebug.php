@@ -5,7 +5,7 @@
  * @version         1.0
  */
 
-namespace wxkingstar\garfield;
+namespace Wxkingstar\Garfield;
 
 class BaseModelDebug
 {
