@@ -1,0 +1,24 @@
+{
+    "name": "garfield/agent",
+    "description": "Garfield agent.",
+    "keywords": ["garfield"],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Wang xin",
+            "email": "wangxin@inagora.cn"
+        }
+    ],
+    "type": "project",
+    "require": {
+		"php": ">=5.4"
+    },
+	"require-dev": {
+		"phpunit/phpunit": "5.2.*"
+    },
+	"autoload": {
+        "psr-4": {
+            "Garfield\\Agent\\": "src/"
+        }
+    }
+}
