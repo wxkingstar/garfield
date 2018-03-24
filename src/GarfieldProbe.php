@@ -82,6 +82,17 @@ class GarfieldProbe
         BaseModelDebug::debug($value, $type, 'trace');
     }
 
+    public static function db($sql, $bindings = [], $result = [], $time = 0)
+    {
+        static $counter = 0;
+        $counter++;
+
+        BaseModelDebug::debug(self::showSql($sql, $bindings), 'db_sql_' . $counter, 'warn');
+        BaseModelDebug::debug([['执行时间(ms)', '查询结果'], [$time, $result]], 'db_result_' . $counter, 'table');
+
+        BaseModelDebug::addStatInfo('db', $time);
+    }
+
     public static function closeShowDebug()
     {
         BaseModelDebug::$showDebug = false;
@@ -98,5 +109,32 @@ class GarfieldProbe
         $redis->connect(self::$REDIS_CONF['host'], self::$REDIS_CONF['port'], self::$REDIS_CONF['db']);
         $redis->auth(self::$REDIS_CONF['password']);
         return $redis;
+    }
+
+    private static function showSql($sql, $data = '')
+    {
+        $sqlShow = '';
+        if (strpos($sql, '?') && is_array($data) && count($data) > 0) {
+            $sqlArr = explode('?', $sql);
+            $last = array_pop($sqlArr);
+            foreach ($sqlArr as $k => $v) {
+                if (!empty($v) && isset($data[$k])) {
+                    if (!is_array($data[$k])) {
+                        $value = "'" . addslashes($data[$k]) . "'";
+                    } else {
+                        $valueArr = array();
+                        foreach ($data[$k] as $val) {
+                            $valueArr[] = "'" . addslashes($val) . "'";
+                        }
+                        $value = '(' . implode(', ', $valueArr) . ')';
+                    }
+                    $sqlShow .= $v . $value;
+                }
+            }
+            $sqlShow .= $last;
+        } else {
+            $sqlShow = $sql;
+        }
+        return $sqlShow;
     }
 }

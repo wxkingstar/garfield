@@ -50,15 +50,10 @@ class BaseModelDebug
      * @param int $offset 增加的大小，默认为1
      * @return mixed
      */
-    public static function addStatInfo($type, $startTime = 0, $offset = 1)
+    public static function addStatInfo($type, $time = 0, $offset = 1)
     {
         self::$statInfo[$type]['count'] += $offset;
-        if ($startTime > 0) {
-            $runTime = sprintf("%0.2f", (microtime(true) - $startTime) * 1000);
-            self::$statInfo[$type]['time'] += $runTime;
-            return $runTime . " ms";
-        }
-        return true;
+        self::$statInfo[$type]['time'] += $time;
     }
 
     public static function debug($value, $type = 'debug', $show = 'log')
