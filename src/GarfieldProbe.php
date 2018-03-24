@@ -93,6 +93,12 @@ class GarfieldProbe
         BaseModelDebug::addStatInfo('db', $time);
     }
 
+    public static function mc($method, $key, $val)
+    {
+        BaseModelDebug::debug(['key' => $key, 'val' => $val], 'mc_' . $method, 'info');
+        BaseModelDebug::addStatInfo('mc', 0);
+    }
+
     public static function closeShowDebug()
     {
         BaseModelDebug::$showDebug = false;
