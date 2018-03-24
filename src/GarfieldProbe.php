@@ -93,9 +93,10 @@ class GarfieldProbe
         BaseModelDebug::addStatInfo('db', $time);
     }
 
-    public static function mc($method, $key, $val)
+    public static function mc($method, $key, $val, $expire)
     {
-        BaseModelDebug::debug(['key' => $key, 'val' => $val], 'mc_' . $method, 'info');
+        BaseModelDebug::debug(['key' => $key, 'val' => $val, 'expire' => $expire],
+            'mc_' . $method, 'info');
         BaseModelDebug::addStatInfo('mc', 0);
     }
 
