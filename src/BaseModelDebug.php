@@ -63,40 +63,38 @@ class BaseModelDebug
 
     public static function debug($value, $type = 'debug', $show = 'log')
     {
-        if (defined("QDEBUG") && QDEBUG == true && self::$showDebug == true) {
-            if ($show == "table") {
-                $show = "table";
-            } elseif ($show == "error") {
-                $show = "error";
-            } elseif ($show == "warning" || $show == "wran") {
-                $show = "warning";
-            } elseif ($show == "info") {
-                $show = "info";
-            } else {
-                $show = "log";
-            }
-            if (is_string($value) && preg_match("/^UPDATE|^DELETE|^INSERT|^REPLACE|^ALTER|^TRUNCATE|^CREATE/i",
-                    $value)) {
-                $show = "warning";
-            }
-            if (in_array($type, [
-                'mc_get',
-                'mc_set',
-                'mc_delete',
-                'mc_connect',
-                'mc_add',
-                'mc_increment',
-                'mc_decrement',
-                'mc_setMulti',
-                'mc_getMulti'
-            ])) {
-                $show = "label";
-            }
-            self::$onlineDebugData[] = array('key' => $type, 'type' => $show, 'value' => $value, 'show' => $show);
-            // mc 信息统计
-            if ((strpos($type, 'mc_') === 0) && !in_array($type, array('mc_connect'), true)) {
-                self::addStatInfo('mc');
-            }
+        if ($show == "table") {
+            $show = "table";
+        } elseif ($show == "error") {
+            $show = "error";
+        } elseif ($show == "warning" || $show == "wran") {
+            $show = "warning";
+        } elseif ($show == "info") {
+            $show = "info";
+        } else {
+            $show = "log";
+        }
+        if (is_string($value) && preg_match("/^UPDATE|^DELETE|^INSERT|^REPLACE|^ALTER|^TRUNCATE|^CREATE/i",
+                $value)) {
+            $show = "warning";
+        }
+        if (in_array($type, [
+            'mc_get',
+            'mc_set',
+            'mc_delete',
+            'mc_connect',
+            'mc_add',
+            'mc_increment',
+            'mc_decrement',
+            'mc_setMulti',
+            'mc_getMulti'
+        ])) {
+            $show = "label";
+        }
+        self::$onlineDebugData[] = array('key' => $type, 'type' => $show, 'value' => $value, 'show' => $show);
+        // mc 信息统计
+        if ((strpos($type, 'mc_') === 0) && !in_array($type, array('mc_connect'), true)) {
+            self::addStatInfo('mc');
         }
     }
 
@@ -108,36 +106,33 @@ class BaseModelDebug
      */
     public static function setSql($sql, $data = [])
     {
-        if (defined('QDEBUG') && QDEBUG == true && self::$showDebug == true) {
-            $sqlShow = '';
-            if (strpos($sql, '?') && is_array($data) && count($data) > 0) {
-                $sqlArr = explode('?', $sql);
-                $last = array_pop($sqlArr);
-                $data = array_values($data);
-                foreach ($sqlArr as $k => $v) {
-                    //if (!empty($v) && isset($data[$k])) {
-                    if (1) {
-                        if (isset($data[$k]) && !is_array($data[$k])) {
-                            $value = "'" . addslashes($data[$k]) . "'";
-                        } elseif (isset($data[$k])) {
-                            $valueArr = array();
-                            foreach ($data[$k] as $val) {
-                                $valueArr[] = "'" . addslashes($val) . "'";
-                            }
-                            $value = '(' . implode(', ', $valueArr) . ')';
-                        } else {
-                            $value = "''";
+        $sqlShow = '';
+        if (strpos($sql, '?') && is_array($data) && count($data) > 0) {
+            $sqlArr = explode('?', $sql);
+            $last = array_pop($sqlArr);
+            $data = array_values($data);
+            foreach ($sqlArr as $k => $v) {
+                //if (!empty($v) && isset($data[$k])) {
+                if (1) {
+                    if (isset($data[$k]) && !is_array($data[$k])) {
+                        $value = "'" . addslashes($data[$k]) . "'";
+                    } elseif (isset($data[$k])) {
+                        $valueArr = array();
+                        foreach ($data[$k] as $val) {
+                            $valueArr[] = "'" . addslashes($val) . "'";
                         }
-                        $sqlShow .= $v . $value;
+                        $value = '(' . implode(', ', $valueArr) . ')';
+                    } else {
+                        $value = "''";
                     }
+                    $sqlShow .= $v . $value;
                 }
-                $sqlShow .= $last;
-            } else {
-                $sqlShow = $sql;
             }
-            return $sqlShow;
+            $sqlShow .= $last;
+        } else {
+            $sqlShow = $sql;
         }
-        return '';
+        return $sqlShow;
     }
 
     /**
@@ -147,112 +142,110 @@ class BaseModelDebug
      */
     public static function sendOnlineDebug($error = 0)
     {
-        if (defined('QDEBUG') && QDEBUG == true && self::$showDebug == true) {
+        $user_id = 0;
+        if (!isset($_SERVER['HTTP_HOST'])) {
+            $method = $_SERVER['SCRIPT_NAME'];
+        } else {
             $user_id = 0;
-            if (!isset($_SERVER['HTTP_HOST'])) {
-                $method = $_SERVER['SCRIPT_NAME'];
-            } else {
-                $user_id = 0;
 
-                $arr = [''];
-                isset($_SERVER['QUERY_STRING']) && $arr = explode("&", $_SERVER['QUERY_STRING']);
-                isset($arr[0]) && list($method) = explode("?", $arr[0]);
-                if (empty($method)) {
-                    $method = "/";
+            $arr = [''];
+            isset($_SERVER['QUERY_STRING']) && $arr = explode("&", $_SERVER['QUERY_STRING']);
+            isset($arr[0]) && list($method) = explode("?", $arr[0]);
+            if (empty($method)) {
+                $method = "/";
+            }
+        }
+        $user_id = empty($user_id) ? 0 : $user_id;
+
+        //debug_id
+        $debug_id = uniqid();
+        $debug_level = '';
+
+        //获取客户端ip
+        if (isset($_SERVER['HTTP_REMOTEIP'])) {
+            $client_ip = $_SERVER['HTTP_REMOTEIP'];
+        } elseif (!empty($_REQUEST['remote_addr'])) {
+            $client_ip = $_REQUEST['remote_addr'];
+        } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $client_ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
+            $client_ip = $_SERVER['REMOTE_ADDR'];
+        } else {
+            $client_ip = '127.0.0.1';
+        }
+
+        $server_info = posix_uname();
+        $server_ip = $server_info['nodename'];
+
+        $debug_msg = json_encode(self::$onlineDebugData);
+        if (strlen($debug_msg) > 40 * 1024 * 1024) {
+            $debug_msg = json_encode([
+                array(
+                    'key' => 'message',
+                    'type' => "log",
+                    'value' => "debug超过40M无法显示",
+                    'show' => 'log'
+                )
+            ]);
+        }
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $url = "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+        } else {
+            $url = "";
+        }
+        $html = ob_get_contents();
+        $post = array(
+            'pid' => defined('PROJECT_ID') ? PROJECT_ID : 1,
+            'debug_id' => $debug_id,
+            'debug_level' => $debug_level,
+            'domain' => isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : "",
+            'qid' => $user_id,
+            'method' => $method,
+            //'debug_msg' => serialize(self::$onlineDebugData),//触发autoload问题
+            'debug_msg' => '',
+            'html' => "",
+            //'request' => json_encode(apache_request_headers()),
+            'request' => "{}",
+            //'response' => json_encode(apache_response_headers()),
+            'response' => "{}",
+            'error' => $error,
+            'client_ip' => $client_ip,
+            'request_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "",
+            'server_ip' => $server_ip,
+            'xhprof' => '',
+            'url' => $url,
+            'params' => '',
+        );
+
+        try {
+            $post['user_id'] = $post['qid'];
+            $dbg_arr = [];
+            foreach (self::$onlineDebugData as $log) {
+                if ($log['show'] == "table") {
+                    $type = "label";
+                } elseif ($log['show'] == "error") {
+                    $type = "error";
+                } elseif ($log['show'] == "warning" || $log['show'] == "wran") {
+                    $type = "warning";
+                } elseif ($log['show'] == "info") {
+                    $type = "info";
+                } else {
+                    $type = "log";
                 }
-            }
-            $user_id = empty($user_id) ? 0 : $user_id;
-
-            //debug_id
-            $debug_id = uniqid();
-            $debug_level = '';
-
-            //获取客户端ip
-            if (isset($_SERVER['HTTP_REMOTEIP'])) {
-                $client_ip = $_SERVER['HTTP_REMOTEIP'];
-            } elseif (!empty($_REQUEST['remote_addr'])) {
-                $client_ip = $_REQUEST['remote_addr'];
-            } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-                $client_ip = $_SERVER['HTTP_CLIENT_IP'];
-            } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
-                $client_ip = $_SERVER['REMOTE_ADDR'];
-            } else {
-                $client_ip = '127.0.0.1';
-            }
-
-            $server_info = posix_uname();
-            $server_ip = $server_info['nodename'];
-
-            $debug_msg = json_encode(self::$onlineDebugData);
-            if (strlen($debug_msg) > 40 * 1024 * 1024) {
-                $debug_msg = json_encode([
-                    array(
-                        'key' => 'message',
-                        'type' => "log",
-                        'value' => "debug超过40M无法显示",
-                        'show' => 'log'
-                    )
-                ]);
-            }
-            if (isset($_SERVER['HTTP_HOST'])) {
-                $url = "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
-            } else {
-                $url = "";
-            }
-            $html = ob_get_contents();
-            $post = array(
-                'pid' => defined('PROJECT_ID') ? PROJECT_ID : 1,
-                'debug_id' => $debug_id,
-                'debug_level' => $debug_level,
-                'domain' => isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : "",
-                'qid' => $user_id,
-                'method' => $method,
-                //'debug_msg' => serialize(self::$onlineDebugData),//触发autoload问题
-                'debug_msg' => '',
-                'html' => "",
-                //'request' => json_encode(apache_request_headers()),
-                'request' => "{}",
-                //'response' => json_encode(apache_response_headers()),
-                'response' => "{}",
-                'error' => $error,
-                'client_ip' => $client_ip,
-                'request_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "",
-                'server_ip' => $server_ip,
-                'xhprof' => '',
-                'url' => $url,
-                'params' => '',
-            );
-
-            try {
-                $post['user_id'] = $post['qid'];
-                $dbg_arr = [];
-                foreach (self::$onlineDebugData as $log) {
-                    if ($log['show'] == "table") {
-                        $type = "label";
-                    } elseif ($log['show'] == "error") {
-                        $type = "error";
-                    } elseif ($log['show'] == "warning" || $log['show'] == "wran") {
-                        $type = "warning";
-                    } elseif ($log['show'] == "info") {
-                        $type = "info";
-                    } else {
-                        $type = "log";
-                    }
-                    if (is_string($log['value']) && preg_match("/^UPDATE|^DELETE|^INSERT|^REPLACE|^ALTER|^TRUNCATE|^CREATE/i",
-                            $log['value'])) {
-                        $type = "warning";
-                    }
-                    $dbg_arr[] = ['id' => uniqid(), 'type' => $type, 'key' => $log['type'], 'value' => $log['value']];
+                if (is_string($log['value']) && preg_match("/^UPDATE|^DELETE|^INSERT|^REPLACE|^ALTER|^TRUNCATE|^CREATE/i",
+                        $log['value'])) {
+                    $type = "warning";
                 }
-                $post['debug_id'] = $debug_id;
-                $post['debug_msg'] = $debug_msg;
-                $post['xhprof'] = '';
-                $post['html'] = $html;
-                $post['time'] = date("Y-m-d H:i:s");
-                $redis = GarfieldProbe::getRedis();
-                $redis->publish('dbg_queue', json_encode($post));
-            } catch (\Exception $e) {
+                $dbg_arr[] = ['id' => uniqid(), 'type' => $type, 'key' => $log['type'], 'value' => $log['value']];
             }
+            $post['debug_id'] = $debug_id;
+            $post['debug_msg'] = $debug_msg;
+            $post['xhprof'] = '';
+            $post['html'] = $html;
+            $post['time'] = date("Y-m-d H:i:s");
+            $redis = GarfieldProbe::getRedis();
+            $redis->publish('dbg_queue', json_encode($post));
+        } catch (\Exception $e) {
         }
     }
 

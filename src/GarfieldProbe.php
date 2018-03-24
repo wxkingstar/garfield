@@ -53,59 +53,43 @@ class GarfieldProbe
 
     public static function log($value, $type = 'debug')
     {
-        if (defined("QDEBUG") && class_exists("\BaseModelDebug", false)) {
-            BaseModelDebug::debug($value, $type, 'log');
-        }
+        BaseModelDebug::debug($value, $type, 'log');
     }
 
     public static function info($value, $type = 'info')
     {
-        if (defined("QDEBUG") && class_exists("\BaseModelDebug", false)) {
-            BaseModelDebug::debug($value, $type, 'info');
-        }
+        BaseModelDebug::debug($value, $type, 'info');
     }
 
     public static function wran($value, $type = 'wran')
     {
-        if (defined("QDEBUG") && class_exists("\BaseModelDebug", false)) {
-            BaseModelDebug::debug($value, $type, 'wran');
-        }
+        BaseModelDebug::debug($value, $type, 'wran');
     }
 
     public static function table($value, $type = 'debug')
     {
-        if (defined("QDEBUG") && class_exists("\BaseModelDebug", false)) {
-            BaseModelDebug::debug($value, $type, 'table');
-        }
+        BaseModelDebug::debug($value, $type, 'table');
     }
 
     public static function error($value, $type = 'error')
     {
-        if (defined("QDEBUG") && class_exists("\BaseModelDebug", false)) {
-            BaseModelDebug::setError(2);
-            BaseModelDebug::debug($value, $type, 'error');
-        }
+        BaseModelDebug::setError(2);
+        BaseModelDebug::debug($value, $type, 'error');
     }
 
     public static function trace($value, $type = 'trace')
     {
-        if (defined("QDEBUG") && class_exists("\BaseModelDebug", false)) {
-            BaseModelDebug::debug($value, $type, 'trace');
-        }
+        BaseModelDebug::debug($value, $type, 'trace');
     }
 
     public static function closeShowDebug()
     {
-        if (defined("QDEBUG") && class_exists("\BaseModelDebug", false)) {
-            BaseModelDebug::$showDebug = false;
-        }
+        BaseModelDebug::$showDebug = false;
     }
 
     public static function openShowDebug()
     {
-        if (defined("QDEBUG") && class_exists("\BaseModelDebug", false)) {
-            BaseModelDebug::$showDebug = true;
-        }
+        BaseModelDebug::$showDebug = true;
     }
 
     public static function getRedis()
